@@ -47,11 +47,18 @@ class PyCharmDebugConnect(unreal.ToolMenuEntryScript):
         except ImportError:
             unreal.log_error("Failed to import pydevd_pycharm")
             return
-
-        pydevd_pycharm.settrace(
-            HOST,
-            port=get_debug_port(),
-            stdoutToServer=True,
-            stderrToServer=True,
-        )
+        try:
+            pydevd_pycharm.settrace(
+                HOST,
+                port=get_debug_port(),
+                stdoutToServer=True,
+                stderrToServer=True,
+            )
+        except TypeError:  # new versions of pydevd_pycharm moved to snake case
+            pydevd_pycharm.settrace(
+                HOST,
+                port=get_debug_port(),
+                stdout_to_server=True,
+                stderr_to_server=True,
+            )
         unreal.log("Connected to PyCharm debugger")
