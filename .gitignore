@@ -232,3 +232,7 @@ fabric.properties
 
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
+
+# local config files
+requirements.txt
+plugin_src/PyCharmDebug/Config/tool_config.json
