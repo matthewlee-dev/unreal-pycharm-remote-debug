@@ -1,4 +1,4 @@
-""" Plugin initialization script """
+"""Plugin initialization script"""
 
 try:
     from pycharmdebug.menu import install  # type: ignore

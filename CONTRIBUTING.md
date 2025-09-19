@@ -55,13 +55,8 @@ Project dependencies are available in the [requirements.in](requirements.in) fil
     pip-compile --output-file requirements.txt requirements.in requirements-dev.in requirements-test.in
     ``` 
 4. Install dependencies:        
-   * Windows: 
-      * ```sh
-        pip-sync --python-executable %VIRTUAL_ENV%/scripts/python.exe requirements.txt
-        ```
-   * Linux: 
-      * ```sh
-        pip-sync --python-executable $VIRTUAL_ENV/bin/python.exe requirements.txt
+   * ```sh
+        pip-sync
         ```
       </details>
     

@@ -1,8 +1,14 @@
-from pathlib import Path
 import os
+import sys
 import json
+import subprocess
+from pathlib import Path
+from typing import Optional
 
-from unreal import PluginBlueprintLibrary
+from unreal import (
+    PluginBlueprintLibrary,
+    log_error,
+)
 
 from .exceptions import (
     PyCharmDebugRuntimeError,
@@ -115,21 +121,45 @@ def find_system_dbg_egg() -> str:
             PyCharm bin path not found
             System debug egg not found
     """
-    pycharm_bin_dir = os.environ.get("PyCharm")
-    if pycharm_bin_dir is None:
+    pycharm_installation_path = resolve_os_specific_pycharm_path()
+    if not pycharm_installation_path or not pycharm_installation_path.is_dir():
         raise PyCharmDebugRuntimeError("PyCharm installation not found")
 
-    pycharm_dir_path: Path = Path(pycharm_bin_dir.split(";")[0])
+    egg_path: Path = pycharm_installation_path.joinpath("debug-eggs/pydevd-pycharm.egg")
 
-    if pycharm_dir_path.is_dir() is False:
-        raise PyCharmDebugRuntimeError("PyCharm bin path not found")
-
-    egg_path: Path = pycharm_dir_path.parent.joinpath("debug-eggs/pydevd-pycharm.egg")
-
-    if egg_path.is_file() is False:
+    if not egg_path.is_file():
         raise PyCharmDebugRuntimeError("System debug egg not found")
 
     return egg_path.as_posix()
+
+
+def resolve_os_specific_pycharm_path() -> Optional[Path]:
+    """Attempt to resolve the OS specific PyCharm installation path
+
+    Returns:
+        Path: PyCharm installation path or None
+    """
+    if sys.platform.startswith("win"):
+        pycharm_bin_dir = os.environ.get("PyCharm")
+        return Path(pycharm_bin_dir.split(";")[0])
+
+    elif sys.platform.startswith("darwin"):  # macOS
+        try:
+            output = subprocess.check_output(
+                ["mdfind", "kMDItemCFBundleIdentifier == 'com.jetbrains.pycharm'"],
+                text=True,
+            ).strip()
+            return Path(output.split("\n")[0]) / "Contents" if output else None
+        except Exception:
+            log_error("Failed to import pydevd_pycharm")
+
+    elif sys.platform.startswith("linux"):
+        log_error("Linux")
+
+    else:
+        log_error(f"Unknown: {sys.platform}")
+
+    return None
 
 
 def get_debug_egg() -> str:

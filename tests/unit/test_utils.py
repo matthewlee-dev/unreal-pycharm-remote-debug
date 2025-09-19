@@ -1,3 +1,5 @@
+import sys
+
 import pytest
 
 
@@ -259,6 +261,7 @@ def test_set_debug_port_plugin_config_is_none_and_fails_to_create_expects_false(
     assert result is False
 
 
+@pytest.mark.skipif(not sys.platform.startswith("win"), reason="This test is specific to Windows.")
 def test_find_system_dbg_egg_expects_path_to_egg(mocker):
     # Arrange
     from pycharmdebug.utils import find_system_dbg_egg
@@ -273,11 +276,13 @@ def test_find_system_dbg_egg_expects_path_to_egg(mocker):
     assert result == "/foo/bar/debug-eggs/pydevd-pycharm.egg"
 
 
-def test_find_system_dbg_egg_cant_resolve_pycharm_installation_raises_PyCharmDebugRuntimeError(mocker):
+@pytest.mark.skipif(not sys.platform.startswith("win"), reason="This test is specific to Windows.")
+def test_find_system_dbg_egg_windows_cant_resolve_pycharm_installation_raises_PyCharmDebugRuntimeError(mocker):
     # Arrange
     from pycharmdebug.utils import find_system_dbg_egg
     from pycharmdebug.exceptions import PyCharmDebugRuntimeError
     mocker.patch("os.environ.get", return_value=None)
+
 
     # Act
     with pytest.raises(PyCharmDebugRuntimeError) as _ex:
@@ -287,6 +292,7 @@ def test_find_system_dbg_egg_cant_resolve_pycharm_installation_raises_PyCharmDeb
     assert "PyCharm installation not found" in str(_ex)
 
 
+@pytest.mark.skipif(not sys.platform.startswith("win"), reason="This test is specific to Windows.")
 def test_find_system_dbg_egg_cant_resolve_pycharm_bin_dir_expects_raises_PyCharmDebugRuntimeError(mocker):
     # Arrange
     from pycharmdebug.utils import find_system_dbg_egg
@@ -303,7 +309,8 @@ def test_find_system_dbg_egg_cant_resolve_pycharm_bin_dir_expects_raises_PyCharm
 
     assert "PyCharm bin path not found" in str(_ex)
 
-#
+
+@pytest.mark.skipif(not sys.platform.startswith("win"), reason="This test is specific to Windows.")
 def test_find_system_dbg_egg_cant_resolve_debug_egg_file_expects_raises_PyCharmDebugRuntimeError(mocker):
     # Arrange
     from pycharmdebug.utils import find_system_dbg_egg
