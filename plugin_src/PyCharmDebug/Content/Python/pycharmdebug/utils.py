@@ -143,21 +143,24 @@ def resolve_os_specific_pycharm_path() -> Optional[Path]:
         pycharm_bin_dir = os.environ.get("PyCharm")
         return Path(pycharm_bin_dir.split(";")[0])
 
-    elif sys.platform.startswith("darwin"):  # macOS
+    if sys.platform.startswith("darwin"):  # macOS
         try:
             output = subprocess.check_output(
                 ["mdfind", "kMDItemCFBundleIdentifier == 'com.jetbrains.pycharm'"],
                 text=True,
             ).strip()
-            return Path(output.split("\n")[0]) / "Contents" if output else None
-        except Exception:
+            return (
+                Path(output.split("\n", maxsplit=1)[0]) / "Contents" if output else None
+            )
+
+        except Exception:  # pylint: disable=broad-exception-caught
             log_error("Failed to import pydevd_pycharm")
 
-    elif sys.platform.startswith("linux"):
+    if sys.platform.startswith("linux"):
         log_error("Linux")
+        return None
 
-    else:
-        log_error(f"Unknown: {sys.platform}")
+    log_error(f"Unknown: {sys.platform}")
 
     return None
 
