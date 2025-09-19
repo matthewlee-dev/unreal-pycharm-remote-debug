@@ -1,4 +1,4 @@
 {
     "port_number": 5678,
-    "debug_egg": "/Applications/PyCharm.app/Contents/debug-eggs/pydevd-pycharm.egg"
+    "debug_egg": ""
 }
