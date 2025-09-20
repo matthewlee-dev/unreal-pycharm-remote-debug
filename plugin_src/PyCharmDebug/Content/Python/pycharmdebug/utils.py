@@ -141,7 +141,9 @@ def resolve_os_specific_pycharm_path() -> Optional[Path]:
     """
     if sys.platform.startswith("win"):
         pycharm_bin_dir = os.environ.get("PyCharm")
-        return Path(pycharm_bin_dir.split(";")[0])
+        if not pycharm_bin_dir:
+            return None
+        return Path(pycharm_bin_dir.split(";")[0]).parent
 
     if sys.platform.startswith("darwin"):  # macOS
         try:
