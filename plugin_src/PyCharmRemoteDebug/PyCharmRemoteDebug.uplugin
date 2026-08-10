@@ -1,0 +1,31 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1",
+	"FriendlyName": "PyCharm Remote Debug",
+	"Description": "A convenience plugin for connecting to a PyCharm debugger",
+	"Category": "Python",
+	"CreatedBy": "matthewlee-dev",
+	"CreatedByURL": "https://www.deform.dev",
+	"DocsURL": "https://github.com/matthewlee-dev/unreal-pycharm-remote-debug",
+	"MarketplaceURL": "",
+	"SupportURL": "https://github.com/matthewlee-dev/unreal-pycharm-remote-debug/issues/new?labels=bug&template=bug-report---.md",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"EngineVersion" : "5.7.0",
+	"Modules": [
+		{
+			"Name": "PyCharmRemoteDebug",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "PythonScriptPlugin",
+			"Enabled": true
+		}
+	]
+}

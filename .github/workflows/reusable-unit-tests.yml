@@ -24,4 +24,4 @@ jobs:
           python -m pip install --user -r requirements-test.txt
 
       - name: Execute tests
-        run:  pytest --cov=plugin_src/PyCharmDebug/Content/Python
+        run:  pytest --cov=plugin_src/PyCharmRemoteDebug/Content/Python

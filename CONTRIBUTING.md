@@ -5,11 +5,11 @@
 
 <!-- PROJECT LOGO -->
 <br />
-  <a href="https://github.com/mattdeform/unreal_pycharm_debug">
+  <a href="https://github.com/matthewlee-dev/unreal-pycharm-remote-debug">
     <img src="docs/resources/images/project_logo.png" alt="PyCharmLogo" width="30%">
   </a>
 
-<h3 align="center">Unreal PyCharm Debug</h3>
+<h3 align="center">Unreal PyCharm Remote Debug</h3>
 
   <p align="center">
     Development and Contributing Guidelines
@@ -24,10 +24,13 @@
   <summary>Table of Contents</summary>
   <ol>
     <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#project-layout">Project Layout</a></li>
     <li><a href="#project-dependencies">Project Dependencies</a></li>
+    <li><a href="#building-the-plugin">Building the Plugin</a></li>
     <li><a href="#continuous-integration">Continuous Integration</a></li>
     <li><a href="#tests">Tests</a></li>
     <li><a href="#linting-and-type-hinting">Linting and Type Hinting</a></li>
+    <li><a href="#releasing">Releasing</a></li>
   </ol>
 </details>
 
@@ -38,36 +41,87 @@
 4. Push to the Branch (`git push origin feature_name`).
 5. Open a Pull Request.
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+## Project Layout
+
+```
+plugin_src/PyCharmRemoteDebug/
+  Source/                            editor module: menu + Project Settings
+  Content/Python/pycharmremotedebug/ bridge.py, session.py - all pydevd calls
+scripts/package_plugin.py            builds the release zip
+tests/unit/                          pytest suite (CI)
+tests/uat/                           run by hand in the editor
+```
+
+`settrace()` must run inside Unreal's embedded interpreter, hence the split.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 
 ## Project Dependencies
 Project dependencies are available in the [requirements.in](requirements.in) file, which should be compiled with [pip-tools](https://github.com/jazzband/pip-tools). 
 
-1. Install pip-tools: 
+1. Install pip-tools (into the system python): 
     ```sh
-    pip install pip-tools
+    python3 -m pip install pip-tools
     ```
-2. Dependencies can be added to:
+2. Activate your virtual environment.
+3. Dependencies can be added to:
     * [requirements.in](requirements.in): User requirements.
     * [requirements-dev.in](requirements-dev.in): Development requirements. 
-    * [requirements-test.in](requirements-dev.in): Test requirements.
-3. Compile the requirement files as needed:
+    * [requirements-test.in](requirements-test.in): Test requirements.
+4. Compile the requirement files as needed:
     ```sh 
     pip-compile --output-file requirements.txt requirements.in requirements-dev.in requirements-test.in
     ``` 
-4. Install dependencies:        
+5. Install dependencies:        
    * ```sh
-        pip-sync
-        ```
-      </details>
-    
+        pip-sync requirements.txt
+        ```    
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p> 
+
+
+<!-- BUILDING -->
+## Building the Plugin
+
+Python changes need only an editor restart. C++ changes need a build - the editor
+rebuilds a plugin only when its binary is missing or engine-incompatible.
+
+Point a test project at this repo:
+
+```jsonc
+"Plugins": [ { "Name": "PyCharmRemoteDebug", "Enabled": true } ],
+"AdditionalPluginDirectories": [ "<path to>/unreal-pycharm-remote-debug/plugin_src" ]
+```
+
+Build with the editor closed:
+
+```sh
+# macOS
+<Engine>/Build/BatchFiles/Mac/Build.sh <Project>Editor Mac Development \
+  -Project="<path>/<Project>.uproject" -Progress
+# Windows
+<Engine>\Build\BatchFiles\Build.bat <Project>Editor Win64 Development ^
+  -Project="<path>\<Project>.uproject" -Progress
+```
+
+* Target is `<Project>Editor`, not `UnrealEditor`.
+* Adding `-TargetType=Editor` to that fails with `ActionGraphInvalid`.
+* `UPROPERTY` names reach Python snake-cased: `PyCharmPath` -> `py_charm_path`.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- CI -->
 ## Continuous Integration
 Continuous integration is set up with [GitHub Actions][github-actions-url], workflows can be found in the [.github/workflows](.github/workflows) directory. 
 
-- [ci-main.yml](.github/workflows/ci-main.yml) runs tests, performs linting, formatting, and type hinting checks. It runs automatically on every push and pull request to main or can be triggered from the `Run workflow` button on the [actions menu](https://github.com/mattdeform/unreal_pycharm_debug/actions/workflows/ci-main.yml).
+- [ci-main.yml](.github/workflows/ci-main.yml) runs tests, performs linting, formatting, and type hinting checks. It runs automatically on every push and pull request to main or can be triggered from the `Run workflow` button on the [actions menu](https://github.com/matthewlee-dev/unreal-pycharm-remote-debug/actions/workflows/ci-main.yml).
+- [release.yml](.github/workflows/release.yml) packages a release, see [Releasing](#releasing). Manual trigger only.
+
+Neither compiles the plugin - hosted runners have no Unreal. Verify C++ locally.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -84,8 +138,11 @@ To run tests locally:
 
 with coverage:
 -   ```sh
-    pytest --cov=plugin_src/PyCharmDebug/Content/Python
+    pytest --cov=plugin_src/PyCharmRemoteDebug/Content/Python
     ```
+
+`tests/unit` is what CI runs; `unreal` is mocked. `tests/uat` is run by hand from
+the editor's Python console against a live session.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -96,22 +153,51 @@ Static code analysis is performed with [Pylint](https://pypi.org/project/pylint/
 To run pylint locally:
 
 -   ```sh
-    pylint --rcfile=.pylintrc plugin_src/PyCharmDebug/Content/Python/
+    pylint --rcfile=.pylintrc plugin_src/PyCharmRemoteDebug/Content/Python/ scripts/
     ```
     - A modified [.pylintrc](.pylintrc) file is provided with modifications to ignore Unreal import errors. Append to this file as needed.  
 
 Black formater can be run locally with:
 
 -   ```sh
-    black plugin_src/PyCharmDebug/Content/Python/
+    black plugin_src/PyCharmRemoteDebug/Content/Python/ scripts/
     ```
 
 Run [mypy](https://mypy.readthedocs.io/en/stable/) checks locally with:
 
 -   ```sh
-    mypy plugin_src/PyCharmDebug/Content/Python/
+    mypy plugin_src/PyCharmRemoteDebug/Content/Python/ scripts/
     ```
     - A modified [mypy.ini](mypy.ini) file is included with modifications to ignore Unreal import errors. Append to this file as needed.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+<!-- RELEASING -->
+## Releasing
+
+Run [release.yml](.github/workflows/release.yml) from the `Run workflow` button:
+
+| input | example | meaning |
+| --- | --- | --- |
+| `version` | `1.2.0` | must be `major.minor.patch` |
+| `engine_versions` | `5.6,5.7` | one zip per entry |
+| `draft` | `true` | create the release as a draft |
+
+Tests and static analysis run first, then `PyCharmRemoteDebug-<version>-UE<engine>.zip`
+is attached to a `v<version>` release. Each zip is the plugin folder at the archive
+root, build output stripped - the layout Fab expects, since Fab distributes source
+and Epic compiles it. Only the staged `.uplugin` is stamped, never the repo's.
+
+Same artifacts locally:
+
+```sh
+python scripts/package_plugin.py --plugin-dir plugin_src/PyCharmRemoteDebug \
+  --output-dir dist --version 1.2.0 --engine-versions "5.7"
+```
+
+> Nothing verifies the plugin compiles on the engine versions you list. Build
+> against them locally first.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

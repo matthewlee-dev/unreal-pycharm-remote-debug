@@ -235,4 +235,9 @@ fabric.properties
 
 # local config files
 requirements.txt
-plugin_src/PyCharmDebug/Config/tool_config.json
+plugin_src/PyCharmRemoteDebug/Config/tool_config.json
+# macOS
+.DS_Store
+
+# JetBrains project dir
+.idea/
