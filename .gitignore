@@ -234,7 +234,6 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 
 # local config files
-requirements.txt
 plugin_src/PyCharmRemoteDebug/Config/tool_config.json
 # macOS
 .DS_Store

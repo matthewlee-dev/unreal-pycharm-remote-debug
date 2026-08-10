@@ -61,27 +61,26 @@ tests/uat/                           run by hand in the editor
 
 
 ## Project Dependencies
-Project dependencies are available in the [requirements.in](requirements.in) file, which should be compiled with [pip-tools](https://github.com/jazzband/pip-tools). 
 
-1. Install pip-tools (into the system python): 
+Dependencies live in [pyproject.toml](pyproject.toml) and are pinned by
+[uv.lock](uv.lock). The plugin itself ships none - it uses the standard library,
+the `unreal` module and pydevd from your PyCharm install - so the groups are
+tooling only.
+
+1. Install [uv](https://docs.astral.sh/uv/).
+2. Create the environment (reads [.python-version](.python-version) and the lock):
     ```sh
-    python3 -m pip install pip-tools
+    uv sync --group dev --group test
     ```
-2. Activate your virtual environment.
-3. Dependencies can be added to:
-    * [requirements.in](requirements.in): User requirements.
-    * [requirements-dev.in](requirements-dev.in): Development requirements. 
-    * [requirements-test.in](requirements-test.in): Test requirements.
-4. Compile the requirement files as needed:
-    ```sh 
-    pip-compile --output-file requirements.txt requirements.in requirements-dev.in requirements-test.in
-    ``` 
-5. Install dependencies:        
-   * ```sh
-        pip-sync requirements.txt
-        ```    
+3. Add or change a dependency in `pyproject.toml`, then re-lock:
+    ```sh
+    uv lock
+    ```
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p> 
+Commit `uv.lock` with the change. Commands below use `uv run`, which syncs the
+environment first, so an explicit `uv sync` is only needed to prepare an IDE.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 <!-- BUILDING -->
@@ -133,12 +132,12 @@ Tests are written with [Pytest](https://docs.pytest.org/) and should adhere to t
 
 To run tests locally:
 -   ```sh
-    pytest
+    uv run --group test pytest
     ```
 
 with coverage:
 -   ```sh
-    pytest --cov=plugin_src/PyCharmRemoteDebug/Content/Python
+    uv run --group test pytest --cov=plugin_src/PyCharmRemoteDebug/Content/Python
     ```
 
 `tests/unit` is what CI runs; `unreal` is mocked. `tests/uat` is run by hand from
@@ -153,20 +152,20 @@ Static code analysis is performed with [Pylint](https://pypi.org/project/pylint/
 To run pylint locally:
 
 -   ```sh
-    pylint --rcfile=.pylintrc plugin_src/PyCharmRemoteDebug/Content/Python/ scripts/
+    uv run --group dev pylint --rcfile=.pylintrc plugin_src/PyCharmRemoteDebug/Content/Python/ scripts/
     ```
     - A modified [.pylintrc](.pylintrc) file is provided with modifications to ignore Unreal import errors. Append to this file as needed.  
 
 Black formater can be run locally with:
 
 -   ```sh
-    black plugin_src/PyCharmRemoteDebug/Content/Python/ scripts/
+    uv run --group dev black plugin_src/PyCharmRemoteDebug/Content/Python/ scripts/
     ```
 
 Run [mypy](https://mypy.readthedocs.io/en/stable/) checks locally with:
 
 -   ```sh
-    mypy plugin_src/PyCharmRemoteDebug/Content/Python/ scripts/
+    uv run --group dev mypy plugin_src/PyCharmRemoteDebug/Content/Python/ scripts/
     ```
     - A modified [mypy.ini](mypy.ini) file is included with modifications to ignore Unreal import errors. Append to this file as needed.
 
@@ -192,7 +191,7 @@ and Epic compiles it. Only the staged `.uplugin` is stamped, never the repo's.
 Same artifacts locally:
 
 ```sh
-python scripts/package_plugin.py --plugin-dir plugin_src/PyCharmRemoteDebug \
+uv run scripts/package_plugin.py --plugin-dir plugin_src/PyCharmRemoteDebug \
   --output-dir dist --version 1.2.0 --engine-versions "5.7"
 ```
 

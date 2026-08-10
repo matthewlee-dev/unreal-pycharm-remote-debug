@@ -39,14 +39,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: '3.11'  # matches Unreal 5.7
+          enable-cache: true
 
       - name: Build the release artifacts
         run: |
-          python scripts/package_plugin.py \
+          uv run scripts/package_plugin.py \
             --plugin-dir plugin_src/PyCharmRemoteDebug \
             --output-dir dist \
             --version '${{ inputs.version }}' \

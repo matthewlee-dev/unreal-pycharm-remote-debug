@@ -1,0 +1,16 @@
+[project]
+name = "unreal-pycharm-remote-debug"
+version = "0.0.0"
+description = "An Unreal Engine plugin for connecting to a PyCharm debugger"
+requires-python = ">=3.11"
+# The plugin ships no runtime dependencies: it uses the standard library, the
+# `unreal` module Unreal injects, and pydevd read from the user's PyCharm install.
+dependencies = []
+
+[dependency-groups]
+dev = ["black", "pylint", "mypy"]
+test = ["pytest", "pytest-mock", "pytest-cov"]
+
+[tool.uv]
+# Not a distributable package, so uv must not try to build or install it.
+package = false
