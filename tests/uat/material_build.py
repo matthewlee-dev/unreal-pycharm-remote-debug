@@ -6,10 +6,11 @@ import unreal
 3. Start Unreal debugger
 4. run the following in unreal and make sure break point gets hit:
 
-    import sys
-    sys.path.append("/Users/sunnyday-mini/Developer/unreal_pycharm_debug/tests/uat/")
-    import material_build
-    material_build.main()
+import sys
+sys.path.append("/path/to/this/modules/directory/")
+import material_build
+material_build.main()
+
 5. detach, reconnect, make sure we can still hit the breakpoint
 """
 

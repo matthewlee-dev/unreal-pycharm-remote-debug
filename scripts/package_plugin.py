@@ -66,6 +66,40 @@ def version_code(version: str) -> int:
     return major * 10000 + minor * 100 + patch
 
 
+def engine_version_string(engine_version: str) -> str:
+    """Expand an engine version to the "major.minor.patch" Unreal can parse
+
+    Unreal rejects a two-component EngineVersion, warning "Engine version
+    string ... could not be parsed" on every editor launch, so "5.6" has to
+    reach the descriptor as "5.6.0".
+
+    Raises:
+        ValueError: not two or three dot-separated non-negative integers
+    """
+    parts = engine_version.split(".")
+    if len(parts) not in (2, 3):
+        raise ValueError(
+            f"Expected a major.minor or major.minor.patch engine version, "
+            f"got {engine_version!r}"
+        )
+
+    try:
+        numbers = [int(part) for part in parts]
+    except ValueError as exc:
+        raise ValueError(
+            f"Engine version parts must be integers, got {engine_version!r}"
+        ) from exc
+
+    if any(number < 0 for number in numbers):
+        raise ValueError(
+            f"Engine version parts must not be negative, got {engine_version!r}"
+        )
+
+    major, minor, patch = (numbers + [0])[:3]
+
+    return f"{major}.{minor}.{patch}"
+
+
 def is_excluded(path: Path) -> bool:
     """Check whether a plugin-relative path must stay out of the artifact"""
     if EXCLUDED_DIRECTORIES.intersection(path.parts):
@@ -77,14 +111,17 @@ def is_excluded(path: Path) -> bool:
 def stamp_uplugin(uplugin_path: Path, version: str, engine_version: str) -> dict:
     """Write the release version and target engine into a .uplugin in place
 
+    The engine version is normalised to three components on the way in, since
+    Unreal will not parse a two-component one.
+
     Raises:
-        ValueError: the version is malformed
+        ValueError: the version or engine version is malformed
     """
     descriptor = json.loads(uplugin_path.read_text(encoding="utf-8"))
 
     descriptor["Version"] = version_code(version)
     descriptor["VersionName"] = version
-    descriptor["EngineVersion"] = engine_version
+    descriptor["EngineVersion"] = engine_version_string(engine_version)
 
     uplugin_path.write_text(
         json.dumps(descriptor, indent="\t") + "\n", encoding="utf-8"

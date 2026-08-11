@@ -76,6 +76,33 @@ def test_version_code_part_too_large_expects_ValueError_raised():
     assert "below 100" in str(_ex)
 
 
+@pytest.mark.parametrize(
+    "engine_version,expected",
+    [("5.6", "5.6.0"), ("5.6.0", "5.6.0"), ("5.6.1", "5.6.1"), ("5.10", "5.10.0")],
+)
+def test_engine_version_string_expects_three_components(engine_version, expected):
+    # Arrange - Unreal warns on launch for anything it cannot parse
+    from package_plugin import engine_version_string
+
+    # Act
+    result = engine_version_string(engine_version)
+
+    # Assert
+    assert result == expected
+
+
+@pytest.mark.parametrize(
+    "engine_version", ["5", "5.6.0.1", "5.six", "", "-5.6", "5.-6"]
+)
+def test_engine_version_string_malformed_expects_ValueError_raised(engine_version):
+    # Arrange
+    from package_plugin import engine_version_string
+
+    # Act / Assert
+    with pytest.raises(ValueError):
+        engine_version_string(engine_version)
+
+
 def test_stamp_uplugin_expects_version_fields_written(tmp_path):
     # Arrange
     from package_plugin import stamp_uplugin
@@ -92,7 +119,7 @@ def test_stamp_uplugin_expects_version_fields_written(tmp_path):
     descriptor = json.loads(uplugin.read_text())
     assert descriptor["Version"] == 10200
     assert descriptor["VersionName"] == "1.2.0"
-    assert descriptor["EngineVersion"] == "5.6"
+    assert descriptor["EngineVersion"] == "5.6.0"  # Unreal cannot parse "5.6"
     assert descriptor["FriendlyName"] == "x"  # untouched fields survive
 
 
@@ -163,7 +190,7 @@ def test_package_expects_stamped_uplugin_in_zip(tmp_path):
         )
 
     assert descriptor["VersionName"] == "1.2.0"
-    assert descriptor["EngineVersion"] == "5.6"
+    assert descriptor["EngineVersion"] == "5.6.0"  # Unreal cannot parse "5.6"
 
 
 def test_package_expects_source_uplugin_untouched(tmp_path):
