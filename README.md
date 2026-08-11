@@ -44,6 +44,7 @@
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation">Installation</a></li>
         <li><a href="#usage">Usage</a></li>
+        <li><a href="#remote-setup">Remote Setup</a></li>
       </ul>
     </li>
     <li><a href="#roadmap">Roadmap</a></li>
@@ -108,6 +109,25 @@ A **PyCharm** menu appears in the level editor.
 4. In PyCharm, click "Resume Program" or press F9.
 
 Breakpoints now hit. PyCharm -> Disconnect when done; connect and disconnect cycle freely.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+<!-- REMOTE SETUP -->
+<details>
+<summary id="remote-setup"><b>Remote Setup</b></summary>
+
+Unreal is always the client and connects out to PyCharm. On the PyCharm machine, start the Python Debug Server *before* connecting from Unreal.
+
+* PyCharm machine: allow the debug port through the firewall.
+* Unreal machine: set **Debug Host** to the PyCharm machine's LAN IP, and **PyCharm Executable Location** to a local PyCharm Professional install (only used to locate the debug egg).
+* In PyCharm, Debug Server config -> **Path mappings**: map your tool's local source folder to its path on the Unreal machine.
+
+| Local (PyCharm) | Remote (Unreal) |
+| --- | --- |
+| `.../MyProject/Content/Python/my_awesome_tool` | `C:\...\MyProject\Content\Python\my_awesome_tool` (Windows) or `/.../MyProject/Content/Python/my_awesome_tool` (macOS/Linux) |
+
+</details>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
