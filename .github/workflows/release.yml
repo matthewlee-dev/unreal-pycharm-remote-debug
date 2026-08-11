@@ -1,0 +1,72 @@
+name: release
+
+# Fab takes plugin source, so nothing here needs Unreal - hosted runners suffice.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version, major.minor.patch (e.g. 1.2.0)'
+        required: true
+        type: string
+      engine_versions:
+        description: 'Engine versions to build for, comma separated (e.g. 5.6,5.7)'
+        required: true
+        default: '5.7'
+        type: string
+      draft:
+        description: 'Create the release as a draft'
+        required: false
+        default: true
+        type: boolean
+
+jobs:
+
+  tests:
+    uses: ./.github/workflows/reusable-unit-tests.yml
+
+  static-analysis:
+    needs: tests
+    uses: ./.github/workflows/reusable-static-analysis.yml
+
+  package:
+    needs: static-analysis
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write  # needed to create the release and push its tag
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Build the release artifacts
+        run: |
+          uv run scripts/package_plugin.py \
+            --plugin-dir plugin_src/PyCharmRemoteDebug \
+            --output-dir dist \
+            --version '${{ inputs.version }}' \
+            --engine-versions '${{ inputs.engine_versions }}'
+
+      - name: List what was built
+        run: ls -lh dist/*.zip
+
+      - name: Upload artifacts to the workflow run
+        uses: actions/upload-artifact@v4
+        with:
+          name: PyCharmRemoteDebug-${{ inputs.version }}
+          path: dist/*.zip
+          if-no-files-found: error
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create 'v${{ inputs.version }}' dist/*.zip \
+            --title 'v${{ inputs.version }}' \
+            --notes 'Plugin source packaged for Fab upload, built for UE ${{ inputs.engine_versions }}.' \
+            ${{ inputs.draft && '--draft' || '' }}

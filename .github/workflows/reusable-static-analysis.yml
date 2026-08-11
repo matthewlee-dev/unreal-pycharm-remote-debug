@@ -9,36 +9,22 @@ jobs:
   code-analysis:
     runs-on: ubuntu-latest
 
-    strategy:
-      fail-fast: false
-
-      matrix:
-        python-version: ["3.11",]  # Unreal 5.4.4
-
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
+    # uv reads .python-version and uv.lock, so CI runs the same interpreter
+    # and the same pinned tools as a local checkout.
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
       with:
-        python-version: ${{ matrix.python-version }}
+        enable-cache: true
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pip-tools
-        pip-compile --output-file requirements.txt requirements.in requirements-dev.in requirements-test.in
-        pip-sync requirements.txt
-
+    # scripts/ builds the Fab upload, so it gets the same checks as plugin code
     - name: Analysing the code with pylint
-      run: |
-        pylint plugin_src/PyCharmDebug/Content/Python/  
+      run: uv run --group dev pylint plugin_src/PyCharmRemoteDebug/Content/Python/ scripts/
 
     - name: Analysing the code with black
-      uses: psf/black@stable
-      with:
-        src: "plugin_src/PyCharmDebug/Content/Python/"
-        options: "--diff"
+      run: uv run --group dev black --check --diff plugin_src/PyCharmRemoteDebug/Content/Python/ scripts/
 
     - name: Analysing the code with mypy
-      run: mypy plugin_src/PyCharmDebug/Content/Python/
+      run: uv run --group dev mypy plugin_src/PyCharmRemoteDebug/Content/Python/ scripts/
