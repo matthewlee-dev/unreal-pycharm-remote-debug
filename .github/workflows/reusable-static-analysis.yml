@@ -15,7 +15,7 @@ jobs:
     # uv reads .python-version and uv.lock, so CI runs the same interpreter
     # and the same pinned tools as a local checkout.
     - name: Install uv
-      uses: astral-sh/setup-uv@v9
+      uses: astral-sh/setup-uv@v9.0.0
       with:
         enable-cache: true
 
