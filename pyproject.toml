@@ -14,3 +14,8 @@ test = ["pytest", "pytest-mock", "pytest-cov"]
 [tool.uv]
 # Not a distributable package, so uv must not try to build or install it.
 package = false
+
+[tool.black]
+# Match requires-python; without this black targets newer syntax the
+# 3.11 interpreter can't parse during its safety check.
+target-version = ["py311"]

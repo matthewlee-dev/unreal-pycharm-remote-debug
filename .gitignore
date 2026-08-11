@@ -6,6 +6,11 @@ __pycache__/
 # C extensions
 *.so
 
+# Unreal build output (don't rely on `build/` matching `Build/` on
+# case-insensitive filesystems)
+plugin_src/**/Intermediate/
+plugin_src/**/Binaries/
+
 # Distribution / packaging
 .Python
 build/

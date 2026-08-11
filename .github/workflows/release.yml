@@ -37,10 +37,10 @@ jobs:
       contents: write  # needed to create the release and push its tag
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v9
         with:
           enable-cache: true
 
@@ -56,7 +56,7 @@ jobs:
         run: ls -lh dist/*.zip
 
       - name: Upload artifacts to the workflow run
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: PyCharmRemoteDebug-${{ inputs.version }}
           path: dist/*.zip
