@@ -5,7 +5,7 @@
 
 <!-- PROJECT LOGO -->
 <br />
-  <a href="https://github.com/matthewlee-dev/unreal-pycharm-remote-debug">
+  <a href="https://github.com/matthewlee-dev/unreal_pycharm_remote_debug">
     <img src="docs/resources/images/project_logo.png" alt="PyCharmLogo" width="30%">
   </a>
 
@@ -93,7 +93,7 @@ Point a test project at this repo:
 
 ```jsonc
 "Plugins": [ { "Name": "PyCharmRemoteDebug", "Enabled": true } ],
-"AdditionalPluginDirectories": [ "<path to>/unreal-pycharm-remote-debug/plugin_src" ]
+"AdditionalPluginDirectories": [ "<path to>/unreal_pycharm_remote_debug/plugin_src" ]
 ```
 
 Build with the editor closed:
@@ -117,7 +117,7 @@ Build with the editor closed:
 ## Continuous Integration
 Continuous integration is set up with [GitHub Actions][github-actions-url], workflows can be found in the [.github/workflows](.github/workflows) directory. 
 
-- [ci-main.yml](.github/workflows/ci-main.yml) runs tests, performs linting, formatting, and type hinting checks. It runs automatically on every push and pull request to main or can be triggered from the `Run workflow` button on the [actions menu](https://github.com/matthewlee-dev/unreal-pycharm-remote-debug/actions/workflows/ci-main.yml).
+- [ci-main.yml](.github/workflows/ci-main.yml) runs tests, performs linting, formatting, and type hinting checks. It runs automatically on every push and pull request to main or can be triggered from the `Run workflow` button on the [actions menu](https://github.com/matthewlee-dev/unreal_pycharm_remote_debug/actions/workflows/ci-main.yml).
 - [release.yml](.github/workflows/release.yml) packages a release, see [Releasing](#releasing). Manual trigger only.
 
 Neither compiles the plugin - hosted runners have no Unreal. Verify C++ locally.
