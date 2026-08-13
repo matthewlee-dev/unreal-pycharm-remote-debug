@@ -1,0 +1,47 @@
+site_name: Unreal PyCharm Remote Debug
+site_description: An Unreal Engine plugin for connecting to a PyCharm debugger.
+site_url: https://matthewlee-dev.github.io/unreal-pycharm-remote-debug/
+repo_url: https://github.com/matthewlee-dev/unreal-pycharm-remote-debug
+repo_name: matthewlee-dev/unreal-pycharm-remote-debug
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  logo: resources/images/project_logo.png
+  favicon: resources/images/UE-Icon-2023-Black.png
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.top
+    - content.action.edit
+    - content.code.copy
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.superfences
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation: installation.md
+      - Usage: usage.md
+      - Remote Setup: remote-setup.md
+  - Support & Roadmap: support.md

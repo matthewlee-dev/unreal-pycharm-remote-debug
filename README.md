@@ -4,6 +4,7 @@
 <div align="center">
 
 [![CI](https://github.com/matthewlee-dev/unreal-pycharm-remote-debug/actions/workflows/ci-main.yml/badge.svg)](https://github.com/matthewlee-dev/unreal-pycharm-remote-debug/actions/workflows/ci-main.yml)
+[![Docs](https://github.com/matthewlee-dev/unreal-pycharm-remote-debug/actions/workflows/docs.yml/badge.svg)](https://matthewlee-dev.github.io/unreal-pycharm-remote-debug/)
 [![pytest][pytest-shield]][pytest-url]
 [![linting: pylint](https://img.shields.io/badge/linting-pylint-yellowgreen)](https://github.com/pylint-dev/pylint)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -26,6 +27,8 @@
     <a href="https://github.com/matthewlee-dev/unreal-pycharm-remote-debug/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     ·
     <a href="https://github.com/matthewlee-dev/unreal-pycharm-remote-debug/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
+    ·
+    <a href="https://matthewlee-dev.github.io/unreal-pycharm-remote-debug/">Docs</a>
   </p>
 </div>
 

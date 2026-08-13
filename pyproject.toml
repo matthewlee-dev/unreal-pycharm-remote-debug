@@ -10,6 +10,7 @@ dependencies = []
 [dependency-groups]
 dev = ["black", "pylint", "mypy"]
 test = ["pytest", "pytest-mock", "pytest-cov"]
+docs = ["mkdocs", "mkdocs-material"]
 
 [tool.uv]
 # Not a distributable package, so uv must not try to build or install it.

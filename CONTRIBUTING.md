@@ -30,6 +30,7 @@
     <li><a href="#continuous-integration">Continuous Integration</a></li>
     <li><a href="#tests">Tests</a></li>
     <li><a href="#linting-and-type-hinting">Linting and Type Hinting</a></li>
+    <li><a href="#documentation">Documentation</a></li>
     <li><a href="#releasing">Releasing</a></li>
   </ol>
 </details>
@@ -53,6 +54,8 @@ plugin_src/PyCharmRemoteDebug/
 scripts/package_plugin.py            builds the release zip
 tests/unit/                          pytest suite (CI)
 tests/uat/                           run by hand in the editor
+docs/                                user-facing docs site, see Documentation
+mkdocs.yml                           docs site config
 ```
 
 `settrace()` must run inside Unreal's embedded interpreter, hence the split.
@@ -65,12 +68,12 @@ tests/uat/                           run by hand in the editor
 Dependencies live in [pyproject.toml](pyproject.toml) and are pinned by
 [uv.lock](uv.lock). The plugin itself ships none - it uses the standard library,
 the `unreal` module and pydevd from your PyCharm install - so the groups are
-tooling only.
+tooling only: `dev` (black, pylint, mypy), `test` (pytest), `docs` (mkdocs).
 
 1. Install [uv](https://docs.astral.sh/uv/).
 2. Create the environment (reads [.python-version](.python-version) and the lock):
     ```sh
-    uv sync --group dev --group test
+    uv sync --group dev --group test --group docs
     ```
 3. Add or change a dependency in `pyproject.toml`, then re-lock:
     ```sh
@@ -118,6 +121,7 @@ Build with the editor closed:
 Continuous integration is set up with [GitHub Actions][github-actions-url], workflows can be found in the [.github/workflows](.github/workflows) directory. 
 
 - [ci-main.yml](.github/workflows/ci-main.yml) runs tests, performs linting, formatting, and type hinting checks. It runs automatically on every push and pull request to main or can be triggered from the `Run workflow` button on the [actions menu](https://github.com/matthewlee-dev/unreal-pycharm-remote-debug/actions/workflows/ci-main.yml).
+- [docs.yml](.github/workflows/docs.yml) builds and publishes the docs site, see [Documentation](#documentation). Runs on push to main when `docs/` or `mkdocs.yml` change, or manually.
 - [release.yml](.github/workflows/release.yml) packages a release, see [Releasing](#releasing). Manual trigger only.
 
 Neither compiles the plugin - hosted runners have no Unreal. Verify C++ locally.
@@ -168,6 +172,30 @@ Run [mypy](https://mypy.readthedocs.io/en/stable/) checks locally with:
     uv run --group dev mypy plugin_src/PyCharmRemoteDebug/Content/Python/ scripts/
     ```
     - A modified [mypy.ini](mypy.ini) file is included with modifications to ignore Unreal import errors. Append to this file as needed.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+<!-- DOCUMENTATION -->
+## Documentation
+
+The user-facing docs site is built with [MkDocs](https://www.mkdocs.org/) and
+[Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) from the
+[docs/](docs) directory, configured in [mkdocs.yml](mkdocs.yml). README.md and
+CONTRIBUTING.md stay repo-only; anything a plugin *user* needs (installation,
+usage, remote setup) belongs in `docs/` instead.
+
+Preview locally with live reload:
+-   ```sh
+    uv run --group docs mkdocs serve
+    ```
+
+[docs.yml](.github/workflows/docs.yml) builds and publishes the site to GitHub
+Pages on every push to main that touches `docs/` or `mkdocs.yml`. To check the
+build without publishing:
+-   ```sh
+    uv run --group docs mkdocs build --strict
+    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
