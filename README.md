@@ -3,16 +3,17 @@
 <!-- PROJECT SHIELDS -->
 <div align="center">
 
-[![CI](https://github.com/matthewlee-dev/unreal_pycharm_remote_debug/actions/workflows/ci-main.yml/badge.svg)](https://github.com/matthewlee-dev/unreal_pycharm_remote_debug/actions/workflows/ci-main.yml)
+[![CI](https://github.com/matthewlee-dev/unreal-pycharm-remote-debug/actions/workflows/ci-main.yml/badge.svg)](https://github.com/matthewlee-dev/unreal-pycharm-remote-debug/actions/workflows/ci-main.yml)
+[![Docs](https://github.com/matthewlee-dev/unreal-pycharm-remote-debug/actions/workflows/docs.yml/badge.svg)](https://matthewlee-dev.github.io/unreal-pycharm-remote-debug/)
 [![pytest][pytest-shield]][pytest-url]
-[![linting: pylint](https://img.shields.io/badge/linting-pylint-yellowgreen)](https://github.com/pylint-dev/pylint)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
 
 
 <!-- PROJECT LOGO -->
 <br />
-  <a href="https://github.com/matthewlee-dev/unreal_pycharm_remote_debug">
+  <a href="https://github.com/matthewlee-dev/unreal-pycharm-remote-debug">
     <img src="docs/resources/images/project_logo.png" alt="Unreal" width="50%">
   </a>
 
@@ -23,9 +24,11 @@
   An Unreal Engine plugin for connecting to a PyCharm debugger.
   <br />
   <p align="center">
-    <a href="https://github.com/matthewlee-dev/unreal_pycharm_remote_debug/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
+    <a href="https://github.com/matthewlee-dev/unreal-pycharm-remote-debug/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     ·
-    <a href="https://github.com/matthewlee-dev/unreal_pycharm_remote_debug/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
+    <a href="https://github.com/matthewlee-dev/unreal-pycharm-remote-debug/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
+    ·
+    <a href="https://matthewlee-dev.github.io/unreal-pycharm-remote-debug/">Docs</a>
   </p>
 </div>
 
@@ -38,15 +41,7 @@
     <li>
       <a href="#about-the-project">About The Project</a>
     </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-        <li><a href="#usage">Usage</a></li>
-        <li><a href="#remote-setup">Remote Setup</a></li>
-      </ul>
-    </li>
+    <li><a href="#getting-started">Getting Started</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
@@ -72,62 +67,7 @@
 <!-- GETTING STARTED -->
 ## Getting Started
 
-### Prerequisites
-
-* [Unreal Engine 5](https://www.unrealengine.com) - Windows, macOS or Linux editor.
-* [PyCharm Professional](https://www.jetbrains.com/pycharm/buy/) - the debug egg does not ship with Community Edition.
-* Visual Studio (Windows) or Xcode (macOS) - the editor compiles the plugin on first open.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-### Installation
-
-1. Download the zip for your engine version from [Releases](https://github.com/matthewlee-dev/unreal_pycharm_remote_debug/releases).
-2. Extract into `YourProject/Plugins/`.
-3. Open the project and answer **Yes** to the rebuild prompt.
-4. Enable under Edit -> Plugins, restart if prompted.
-
-A **PyCharm** menu appears in the level editor.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-<!-- USAGE EXAMPLES -->
-### Usage
-
-1. Edit -> Project Settings -> Plugins -> **PyCharm Remote Debug**. Set **PyCharm Executable Location** and **Debug Port** (default `5678`). Leave **Debug Host** as `localhost` unless PyCharm is on another machine.
-
-    | Platform | PyCharm Executable Location |
-    | --- | --- |
-    | Windows | `C:\Program Files\JetBrains\PyCharm 2025.1\bin\pycharm64.exe` |
-    | macOS | `/Applications/PyCharm.app` |
-    | Linux | `/opt/pycharm-2025.1/bin/pycharm.sh` |
-
-2. In PyCharm, create a Python Debug Server named ___Unreal___ on that port, and start it.
-3. Level editor: PyCharm -> Connect. <i>The editor freezes until PyCharm attaches</i>.
-4. In PyCharm, click "Resume Program" or press F9.
-
-Breakpoints now hit. PyCharm -> Disconnect when done; connect and disconnect cycle freely.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-<!-- REMOTE SETUP -->
-<details>
-<summary id="remote-setup"><b>Remote Setup</b></summary>
-
-Unreal is always the client and connects out to PyCharm. On the PyCharm machine, start the Python Debug Server *before* connecting from Unreal.
-
-* PyCharm machine: allow the debug port through the firewall.
-* Unreal machine: set **Debug Host** to the PyCharm machine's LAN IP, and **PyCharm Executable Location** to a local PyCharm Professional install (only used to locate the debug egg).
-* In PyCharm, Debug Server config -> **Path mappings**: map your tool's local source folder to its path on the Unreal machine.
-
-| Local (PyCharm) | Remote (Unreal) |
-| --- | --- |
-| `.../MyProject/Content/Python/my_awesome_tool` | `C:\...\MyProject\Content\Python\my_awesome_tool` (Windows) or `/.../MyProject/Content/Python/my_awesome_tool` (macOS/Linux) |
-
-</details>
+See the [documentation](https://matthewlee-dev.github.io/unreal-pycharm-remote-debug/) for prerequisites, installation, usage, and remote debugging setup.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -135,13 +75,13 @@ Unreal is always the client and connects out to PyCharm. On the PyCharm machine,
 <!-- ROADMAP -->
 ## Roadmap
 
-See the [open issues](https://github.com/matthewlee-dev/unreal_pycharm_remote_debug/issues) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/matthewlee-dev/unreal-pycharm-remote-debug/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 ## Contributing
-If you have a suggestion that would make this better, please open an issue from the [request a feature](https://github.com/matthewlee-dev/unreal_pycharm_remote_debug/issues/new?labels=enhancement&template=feature-request---.md) or [report a bug](https://github.com/matthewlee-dev/unreal_pycharm_remote_debug/issues/new?labels=bug&template=bug-report---.md) pages.
+If you have a suggestion that would make this better, please open an issue from the [request a feature](https://github.com/matthewlee-dev/unreal-pycharm-remote-debug/issues/new?labels=enhancement&template=feature-request---.md) or [report a bug](https://github.com/matthewlee-dev/unreal-pycharm-remote-debug/issues/new?labels=bug&template=bug-report---.md) pages.
 
 Development and contribution guidelines can be found on the [CONTRIBUTING.md](CONTRIBUTING.md) page
 
@@ -159,7 +99,7 @@ MIT, see [LICENSE](LICENSE). No JetBrains code is redistributed - the debug egg 
 <!-- CONTACT -->
 ## Contact
 
-Please reach out via the [request a feature](https://github.com/matthewlee-dev/unreal_pycharm_remote_debug/issues/new?labels=enhancement&template=feature-request---.md) or [report a bug](https://github.com/matthewlee-dev/unreal_pycharm_remote_debug/issues/new?labels=bug&template=bug-report---.md) pages.
+Please reach out via the [request a feature](https://github.com/matthewlee-dev/unreal-pycharm-remote-debug/issues/new?labels=enhancement&template=feature-request---.md) or [report a bug](https://github.com/matthewlee-dev/unreal-pycharm-remote-debug/issues/new?labels=bug&template=bug-report---.md) pages.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

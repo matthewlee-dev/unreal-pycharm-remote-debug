@@ -5,7 +5,7 @@
 
 <!-- PROJECT LOGO -->
 <br />
-  <a href="https://github.com/matthewlee-dev/unreal_pycharm_remote_debug">
+  <a href="https://github.com/matthewlee-dev/unreal-pycharm-remote-debug">
     <img src="docs/resources/images/project_logo.png" alt="PyCharmLogo" width="30%">
   </a>
 
@@ -30,6 +30,7 @@
     <li><a href="#continuous-integration">Continuous Integration</a></li>
     <li><a href="#tests">Tests</a></li>
     <li><a href="#linting-and-type-hinting">Linting and Type Hinting</a></li>
+    <li><a href="#documentation">Documentation</a></li>
     <li><a href="#releasing">Releasing</a></li>
   </ol>
 </details>
@@ -53,6 +54,8 @@ plugin_src/PyCharmRemoteDebug/
 scripts/package_plugin.py            builds the release zip
 tests/unit/                          pytest suite (CI)
 tests/uat/                           run by hand in the editor
+docs/                                user-facing docs site, see Documentation
+mkdocs.yml                           docs site config
 ```
 
 `settrace()` must run inside Unreal's embedded interpreter, hence the split.
@@ -65,12 +68,12 @@ tests/uat/                           run by hand in the editor
 Dependencies live in [pyproject.toml](pyproject.toml) and are pinned by
 [uv.lock](uv.lock). The plugin itself ships none - it uses the standard library,
 the `unreal` module and pydevd from your PyCharm install - so the groups are
-tooling only.
+tooling only: `dev` (ruff, mypy), `test` (pytest), `docs` (mkdocs).
 
 1. Install [uv](https://docs.astral.sh/uv/).
 2. Create the environment (reads [.python-version](.python-version) and the lock):
     ```sh
-    uv sync --group dev --group test
+    uv sync --group dev --group test --group docs
     ```
 3. Add or change a dependency in `pyproject.toml`, then re-lock:
     ```sh
@@ -93,7 +96,7 @@ Point a test project at this repo:
 
 ```jsonc
 "Plugins": [ { "Name": "PyCharmRemoteDebug", "Enabled": true } ],
-"AdditionalPluginDirectories": [ "<path to>/unreal_pycharm_remote_debug/plugin_src" ]
+"AdditionalPluginDirectories": [ "<path to>/unreal-pycharm-remote-debug/plugin_src" ]
 ```
 
 Build with the editor closed:
@@ -117,7 +120,8 @@ Build with the editor closed:
 ## Continuous Integration
 Continuous integration is set up with [GitHub Actions][github-actions-url], workflows can be found in the [.github/workflows](.github/workflows) directory. 
 
-- [ci-main.yml](.github/workflows/ci-main.yml) runs tests, performs linting, formatting, and type hinting checks. It runs automatically on every push and pull request to main or can be triggered from the `Run workflow` button on the [actions menu](https://github.com/matthewlee-dev/unreal_pycharm_remote_debug/actions/workflows/ci-main.yml).
+- [ci-main.yml](.github/workflows/ci-main.yml) runs tests, performs linting, formatting, and type hinting checks. It runs automatically on every push and pull request to main or can be triggered from the `Run workflow` button on the [actions menu](https://github.com/matthewlee-dev/unreal-pycharm-remote-debug/actions/workflows/ci-main.yml).
+- [docs.yml](.github/workflows/docs.yml) builds and publishes the docs site, see [Documentation](#documentation). Runs on push to main when `docs/` or `mkdocs.yml` change, or manually.
 - [release.yml](.github/workflows/release.yml) packages a release, see [Releasing](#releasing). Manual trigger only.
 
 Neither compiles the plugin - hosted runners have no Unreal. Verify C++ locally.
@@ -147,19 +151,19 @@ the editor's Python console against a live session.
 
 
 ## Linting and Type Hinting
-Static code analysis is performed with [Pylint](https://pypi.org/project/pylint/), formatting with [Black format](https://github.com/psf/black), and type hinting with [mypy](https://mypy.readthedocs.io/en/stable/).
+Static code analysis and formatting are performed with [Ruff](https://docs.astral.sh/ruff/), and type hinting with [mypy](https://mypy.readthedocs.io/en/stable/).
 
-To run pylint locally:
+To run ruff's linter locally:
 
 -   ```sh
-    uv run --group dev pylint --rcfile=.pylintrc plugin_src/PyCharmRemoteDebug/Content/Python/ scripts/
+    uv run --group dev ruff check plugin_src/PyCharmRemoteDebug/Content/Python/ scripts/
     ```
-    - A modified [.pylintrc](.pylintrc) file is provided with modifications to ignore Unreal import errors. Append to this file as needed.  
+    - Rule selection lives in [pyproject.toml](pyproject.toml)'s `[tool.ruff.lint]`. Append to `select` as needed.
 
-Black formater can be run locally with:
+Ruff's formatter can be run locally with:
 
 -   ```sh
-    uv run --group dev black plugin_src/PyCharmRemoteDebug/Content/Python/ scripts/
+    uv run --group dev ruff format plugin_src/PyCharmRemoteDebug/Content/Python/ scripts/
     ```
 
 Run [mypy](https://mypy.readthedocs.io/en/stable/) checks locally with:
@@ -167,7 +171,31 @@ Run [mypy](https://mypy.readthedocs.io/en/stable/) checks locally with:
 -   ```sh
     uv run --group dev mypy plugin_src/PyCharmRemoteDebug/Content/Python/ scripts/
     ```
-    - A modified [mypy.ini](mypy.ini) file is included with modifications to ignore Unreal import errors. Append to this file as needed.
+    - Overrides live in [pyproject.toml](pyproject.toml)'s `[[tool.mypy.overrides]]` to ignore missing imports for `unreal`, `pydevd`, and `pydevd_pycharm`. Append to this table as needed.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+<!-- DOCUMENTATION -->
+## Documentation
+
+The user-facing docs site is built with [MkDocs](https://www.mkdocs.org/) and
+[Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) from the
+[docs/](docs) directory, configured in [mkdocs.yml](mkdocs.yml). README.md and
+CONTRIBUTING.md stay repo-only; anything a plugin *user* needs (installation,
+usage, remote setup) belongs in `docs/` instead.
+
+Preview locally with live reload:
+-   ```sh
+    uv run --group docs mkdocs serve
+    ```
+
+[docs.yml](.github/workflows/docs.yml) builds and publishes the site to GitHub
+Pages on every push to main that touches `docs/` or `mkdocs.yml`. To check the
+build without publishing:
+-   ```sh
+    uv run --group docs mkdocs build --strict
+    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

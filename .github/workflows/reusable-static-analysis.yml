@@ -20,11 +20,11 @@ jobs:
         enable-cache: true
 
     # scripts/ builds the Fab upload, so it gets the same checks as plugin code
-    - name: Analysing the code with pylint
-      run: uv run --group dev pylint plugin_src/PyCharmRemoteDebug/Content/Python/ scripts/
+    - name: Analysing the code with ruff
+      run: uv run --group dev ruff check plugin_src/PyCharmRemoteDebug/Content/Python/ scripts/
 
-    - name: Analysing the code with black
-      run: uv run --group dev black --check --diff plugin_src/PyCharmRemoteDebug/Content/Python/ scripts/
+    - name: Checking formatting with ruff
+      run: uv run --group dev ruff format --check --diff plugin_src/PyCharmRemoteDebug/Content/Python/ scripts/
 
     - name: Analysing the code with mypy
       run: uv run --group dev mypy plugin_src/PyCharmRemoteDebug/Content/Python/ scripts/

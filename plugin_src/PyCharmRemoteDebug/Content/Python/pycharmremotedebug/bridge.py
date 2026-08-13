@@ -151,7 +151,8 @@ def _get_debug_egg() -> str:
     pycharm_path = _resolve_config_path(serialized_path)
     if not pycharm_path.exists():
         raise PyCharmRemoteDebugRuntimeError(
-            f"PyCharm location saved in Project Settings does not exist: {serialized_path}"
+            "PyCharm location saved in Project Settings does not exist: "
+            f"{serialized_path}"
         )
 
     egg_path = _find_debug_egg(pycharm_path)

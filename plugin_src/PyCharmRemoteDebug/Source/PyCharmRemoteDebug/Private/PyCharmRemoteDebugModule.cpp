@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Matthew Lee
+
 #include "PyCharmRemoteDebugModule.h"
 
 #include "Framework/Commands/UIAction.h"

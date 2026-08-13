@@ -7,9 +7,9 @@
 	"Category": "Python",
 	"CreatedBy": "matthewlee-dev",
 	"CreatedByURL": "https://www.deform.dev",
-	"DocsURL": "https://github.com/matthewlee-dev/unreal_pycharm_remote_debug",
+	"DocsURL": "https://matthewlee-dev.github.io/unreal-pycharm-remote-debug/",
 	"MarketplaceURL": "",
-	"SupportURL": "https://github.com/matthewlee-dev/unreal_pycharm_remote_debug/issues/new?labels=bug&template=bug-report---.md",
+	"SupportURL": "https://github.com/matthewlee-dev/unreal-pycharm-remote-debug/issues/new?labels=bug&template=bug-report---.md",
 	"CanContainContent": true,
 	"IsBetaVersion": false,
 	"IsExperimentalVersion": false,
@@ -19,7 +19,8 @@
 		{
 			"Name": "PyCharmRemoteDebug",
 			"Type": "Editor",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [ "Win64", "Mac", "Linux" ]
 		}
 	],
 	"Plugins": [
