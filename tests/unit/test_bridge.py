@@ -64,6 +64,18 @@ def fake_pydevd_pycharm(monkeypatch):
     return module
 
 
+@pytest.fixture
+def restore_sys_path():
+    """Undo connect()'s sys.path append
+
+    Teardown rather than a trailing remove() in the test body: a failed assert
+    would skip that, leaking the egg path into every later test.
+    """
+    original = sys.path.copy()
+    yield
+    sys.path[:] = original
+
+
 def test_find_debug_egg_windows_layout_expects_egg_returned(tmp_path):
     # Arrange
     from pycharmremotedebug import bridge
@@ -77,28 +89,19 @@ def test_find_debug_egg_windows_layout_expects_egg_returned(tmp_path):
     assert result == executable.parent.parent / "debug-eggs" / "pydevd-pycharm.egg"
 
 
-def test_find_debug_egg_macos_bundle_expects_egg_returned(tmp_path):
+# macOS dialogs hand back PyCharm.app, but nothing stops a user picking the
+# binary inside it - both must walk to the same egg
+@pytest.mark.parametrize(
+    "relative_pick", ["", "Contents/MacOS/pycharm"], ids=["bundle", "binary"]
+)
+def test_find_debug_egg_macos_layout_expects_egg_returned(tmp_path, relative_pick):
     # Arrange
     from pycharmremotedebug import bridge
 
     bundle = _make_macos_install(tmp_path)
-
-    # Act - macOS dialogs hand back the bundle, not the binary
-    result = bridge._find_debug_egg(bundle)
-
-    # Assert
-    assert result == bundle / "Contents" / "debug-eggs" / "pydevd-pycharm.egg"
-
-
-def test_find_debug_egg_macos_binary_expects_egg_returned(tmp_path):
-    # Arrange
-    from pycharmremotedebug import bridge
-
-    bundle = _make_macos_install(tmp_path)
-    executable = bundle / "Contents" / "MacOS" / "pycharm"
 
     # Act
-    result = bridge._find_debug_egg(executable)
+    result = bridge._find_debug_egg(bundle / relative_pick)
 
     # Assert
     assert result == bundle / "Contents" / "debug-eggs" / "pydevd-pycharm.egg"
@@ -468,8 +471,12 @@ def test_connect_invalid_egg_expects_error_logged_and_settrace_not_called(
     fake_pydevd_pycharm.settrace.assert_not_called()
 
 
+# the default loopback pair, and a remote host, reach settrace unchanged
+@pytest.mark.parametrize(
+    ("host", "port"), [("localhost", 5678), ("192.168.1.50", 9999)]
+)
 def test_connect_valid_egg_expects_settrace_called(
-    mocker, tmp_path, fake_pydevd_pycharm
+    mocker, tmp_path, fake_pydevd_pycharm, restore_sys_path, host, port
 ):
     # Arrange
     from pycharmremotedebug import bridge
@@ -482,7 +489,7 @@ def test_connect_valid_egg_expects_settrace_called(
     mocker.patch(
         "pycharmremotedebug.bridge._get_debug_egg", return_value=egg_path.as_posix()
     )
-    _mock_settings(mocker, port_number=5678, host="localhost")
+    _mock_settings(mocker, port_number=port, host=host)
     mock_unreal = mocker.patch("pycharmremotedebug.bridge.unreal")
 
     # Act
@@ -490,44 +497,13 @@ def test_connect_valid_egg_expects_settrace_called(
 
     # Assert
     fake_pydevd_pycharm.settrace.assert_called_once_with(
-        "localhost",
-        port=5678,
+        host,
+        port=port,
         stdoutToServer=True,
         stderrToServer=True,
     )
     mock_unreal.log.assert_called_once_with("Connected to PyCharm debugger")
     assert egg_path.as_posix() in sys.path
-    sys.path.remove(egg_path.as_posix())
-
-
-def test_connect_custom_host_expects_settrace_called_with_host(
-    mocker, tmp_path, fake_pydevd_pycharm
-):
-    # Arrange
-    from pycharmremotedebug import bridge
-
-    egg_path = tmp_path / "pydevd-pycharm.egg"
-    egg_path.touch()
-
-    mocker.patch("pycharmremotedebug.bridge.is_connected", return_value=False)
-    mocker.patch("pycharmremotedebug.bridge.purge_stale_pydevd")
-    mocker.patch(
-        "pycharmremotedebug.bridge._get_debug_egg", return_value=egg_path.as_posix()
-    )
-    _mock_settings(mocker, port_number=9999, host="192.168.1.50")
-    mocker.patch("pycharmremotedebug.bridge.unreal")
-
-    # Act
-    bridge.connect()
-
-    # Assert
-    fake_pydevd_pycharm.settrace.assert_called_once_with(
-        "192.168.1.50",
-        port=9999,
-        stdoutToServer=True,
-        stderrToServer=True,
-    )
-    sys.path.remove(egg_path.as_posix())
 
 
 def test_disconnect_not_connected_expects_no_op(mocker):
