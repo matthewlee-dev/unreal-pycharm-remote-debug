@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Matthew Lee
+
 using UnrealBuildTool;
 
 public class PyCharmRemoteDebug : ModuleRules

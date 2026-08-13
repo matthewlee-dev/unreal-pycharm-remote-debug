@@ -23,7 +23,9 @@ EXCLUDED_DIRECTORIES = frozenset(
     }
 )
 EXCLUDED_SUFFIXES = (".pyc", ".pyo")
-EXCLUDED_NAMES = frozenset({".DS_Store", "Thumbs.db"})
+# LICENSE grants MIT terms that would contradict the Fab EULA governing what
+# Fab buyers receive; the repo root LICENSE still covers the GitHub source.
+EXCLUDED_NAMES = frozenset({".DS_Store", "Thumbs.db", "LICENSE"})
 
 
 def parse_version(version: str) -> tuple[int, int, int]:
