@@ -400,6 +400,38 @@ def test_route_pydevd_info_logging_no_pydevd_expects_no_raise(mocker, monkeypatc
     bridge._route_pydevd_info_logging()
 
 
+def test_notify_error_expects_logged_and_shown_as_failure(mocker):
+    # Arrange
+    from pycharmremotedebug import bridge
+
+    mock_unreal = mocker.patch("pycharmremotedebug.bridge.unreal")
+
+    # Act
+    bridge._notify("no PyCharm path", is_error=True)
+
+    # Assert
+    mock_unreal.log_error.assert_called_once_with("no PyCharm path")
+    mock_unreal.PyCharmRemoteDebugNotifications.show_notification.assert_called_once_with(
+        "no PyCharm path", True
+    )
+
+
+def test_notify_stale_binary_expects_no_raise(mocker):
+    # Arrange - a plugin binary predating the notification class
+    from pycharmremotedebug import bridge
+
+    mock_unreal = mocker.patch("pycharmremotedebug.bridge.unreal")
+    mock_unreal.PyCharmRemoteDebugNotifications.show_notification.side_effect = (
+        AttributeError("no attribute 'show_notification'")
+    )
+
+    # Act / Assert - must not raise, and the outcome still reaches the log
+    bridge._notify("connected")
+
+    mock_unreal.log.assert_called_once_with("connected")
+    mock_unreal.log_warning.assert_called_once()
+
+
 def test_connect_already_connected_expects_no_op(mocker):
     # Arrange
     from pycharmremotedebug import bridge

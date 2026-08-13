@@ -29,6 +29,28 @@ def _get_settings() -> "unreal.PyCharmRemoteDebugSettings":
     return unreal.get_default_object(unreal.PyCharmRemoteDebugSettings)
 
 
+def _notify(message: str, is_error: bool = False) -> None:
+    """Log an outcome and show it as an editor notification
+
+    The menu entries give no feedback of their own, so a log-only outcome reads
+    as "Connect did nothing".
+
+    Args:
+        message (str): Text to log and show
+        is_error (bool): Show the failure toast, which links to the settings
+    """
+    if is_error:
+        unreal.log_error(message)
+    else:
+        unreal.log(message)
+
+    try:
+        unreal.PyCharmRemoteDebugNotifications.show_notification(message, is_error)
+    except Exception as exc:  # pylint: disable=broad-exception-caught
+        # a stale plugin binary predating the class - the log line still stands
+        unreal.log_warning(f"Could not show an editor notification ({exc})")
+
+
 def _find_debug_egg(pycharm_path: Path) -> Path | None:
     """Find the debug egg shipped alongside a PyCharm executable or .app bundle
 
@@ -144,8 +166,7 @@ def _get_debug_egg() -> str:
     if serialized_path == "":
         raise PyCharmRemoteDebugRuntimeError(
             "No PyCharm location saved in Project Settings, please enter the "
-            "path to your PyCharm executable (PyCharm.app/Contents/MacOS/pycharm "
-            "on macOS)"
+            "path to your PyCharm executable"
         )
 
     pycharm_path = _resolve_config_path(serialized_path)
@@ -188,13 +209,13 @@ def connect() -> None:
     """Connect to the PyCharm debugger, via the host, port and egg configured
     in Project Settings > Plugins > PyCharm Remote Debug"""
     if is_connected():
-        unreal.log("Already connected to PyCharm debugger, ignoring")
+        _notify("Already connected to PyCharm debugger, ignoring")
         return
 
     try:
         dbg_egg = _get_debug_egg()
     except PyCharmRemoteDebugRuntimeError as exc:
-        unreal.log_error(str(exc))
+        _notify(str(exc), is_error=True)
         return
 
     dbg_path = _unpack_egg(Path(dbg_egg)).as_posix()
@@ -207,7 +228,7 @@ def connect() -> None:
     try:
         import pydevd_pycharm
     except ImportError:
-        unreal.log_error("Failed to import pydevd_pycharm")
+        _notify("Failed to import pydevd_pycharm from the debug egg", is_error=True)
         return
 
     _route_pydevd_info_logging()
@@ -231,21 +252,22 @@ def connect() -> None:
                 stderr_to_server=True,
             )
     except Exception as exc:  # pylint: disable=broad-exception-caught
-        unreal.log_error(
+        _notify(
             f"Failed to connect to PyCharm debug server on {host}:{port} "
-            f"- is the Debug Server running in PyCharm? ({exc})"
+            f"- is the Debug Server running in PyCharm? ({exc})",
+            is_error=True,
         )
         return
-    unreal.log("Connected to PyCharm debugger")
+    _notify("Connected to PyCharm debugger")
 
 
 def disconnect() -> None:
     """Disconnect from the PyCharm debugger"""
     if not is_connected():
-        unreal.log("Not connected to PyCharm debugger, nothing to do")
+        _notify("Not connected to PyCharm debugger, nothing to do")
         return
 
     import pydevd  # pylint: disable=import-error  # provided by the debug egg
 
     pydevd.stoptrace()
-    unreal.log("Disconnected from PyCharm debugger")
+    _notify("Disconnected from PyCharm debugger")

@@ -17,6 +17,7 @@ breakpoints set in PyCharm hit while Unreal runs.
 
 * [Unreal Engine 5](https://www.unrealengine.com) - Windows, macOS or Linux editor.
 * [PyCharm Professional](https://www.jetbrains.com/pycharm/buy/) - the debug egg does not ship with Community Edition.
+* PythonScriptPlugin (ships with Unreal).
 
 ## Next steps
 

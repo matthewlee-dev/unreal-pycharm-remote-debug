@@ -21,6 +21,7 @@ public class PyCharmRemoteDebug : ModuleRules
 			"SlateCore",
 			"ToolMenus",
 			"DeveloperSettings",
+			"Settings",
 			"PythonScriptPlugin",
 		});
 	}
