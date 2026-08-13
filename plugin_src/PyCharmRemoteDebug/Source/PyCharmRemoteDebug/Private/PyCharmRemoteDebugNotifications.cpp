@@ -7,7 +7,7 @@
 #include "Modules/ModuleManager.h"
 #include "PyCharmRemoteDebugModule.h"
 #include "PyCharmRemoteDebugSettings.h"
-#include "Widgets/Notifications/SNotificationItem.h"
+#include "Widgets/Notifications/SNotificationList.h"
 
 #define LOCTEXT_NAMESPACE "PyCharmRemoteDebugNotifications"
 
