@@ -68,7 +68,7 @@ mkdocs.yml                           docs site config
 Dependencies live in [pyproject.toml](pyproject.toml) and are pinned by
 [uv.lock](uv.lock). The plugin itself ships none - it uses the standard library,
 the `unreal` module and pydevd from your PyCharm install - so the groups are
-tooling only: `dev` (black, pylint, mypy), `test` (pytest), `docs` (mkdocs).
+tooling only: `dev` (ruff, mypy), `test` (pytest), `docs` (mkdocs).
 
 1. Install [uv](https://docs.astral.sh/uv/).
 2. Create the environment (reads [.python-version](.python-version) and the lock):
@@ -151,19 +151,19 @@ the editor's Python console against a live session.
 
 
 ## Linting and Type Hinting
-Static code analysis is performed with [Pylint](https://pypi.org/project/pylint/), formatting with [Black format](https://github.com/psf/black), and type hinting with [mypy](https://mypy.readthedocs.io/en/stable/).
+Static code analysis and formatting are performed with [Ruff](https://docs.astral.sh/ruff/), and type hinting with [mypy](https://mypy.readthedocs.io/en/stable/).
 
-To run pylint locally:
+To run ruff's linter locally:
 
 -   ```sh
-    uv run --group dev pylint --rcfile=.pylintrc plugin_src/PyCharmRemoteDebug/Content/Python/ scripts/
+    uv run --group dev ruff check plugin_src/PyCharmRemoteDebug/Content/Python/ scripts/
     ```
-    - A modified [.pylintrc](.pylintrc) file is provided with modifications to ignore Unreal import errors. Append to this file as needed.  
+    - Rule selection lives in [pyproject.toml](pyproject.toml)'s `[tool.ruff.lint]`. Append to `select` as needed.
 
-Black formater can be run locally with:
+Ruff's formatter can be run locally with:
 
 -   ```sh
-    uv run --group dev black plugin_src/PyCharmRemoteDebug/Content/Python/ scripts/
+    uv run --group dev ruff format plugin_src/PyCharmRemoteDebug/Content/Python/ scripts/
     ```
 
 Run [mypy](https://mypy.readthedocs.io/en/stable/) checks locally with:
@@ -171,7 +171,7 @@ Run [mypy](https://mypy.readthedocs.io/en/stable/) checks locally with:
 -   ```sh
     uv run --group dev mypy plugin_src/PyCharmRemoteDebug/Content/Python/ scripts/
     ```
-    - A modified [mypy.ini](mypy.ini) file is included with modifications to ignore Unreal import errors. Append to this file as needed.
+    - Overrides live in [pyproject.toml](pyproject.toml)'s `[[tool.mypy.overrides]]` to ignore missing imports for `unreal`, `pydevd`, and `pydevd_pycharm`. Append to this table as needed.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

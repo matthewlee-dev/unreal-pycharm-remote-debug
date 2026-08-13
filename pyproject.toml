@@ -8,7 +8,7 @@ requires-python = ">=3.11"
 dependencies = []
 
 [dependency-groups]
-dev = ["black", "pylint", "mypy"]
+dev = ["ruff", "mypy"]
 test = ["pytest", "pytest-mock", "pytest-cov"]
 docs = ["mkdocs", "mkdocs-material"]
 
@@ -16,7 +16,20 @@ docs = ["mkdocs", "mkdocs-material"]
 # Not a distributable package, so uv must not try to build or install it.
 package = false
 
-[tool.black]
-# Match requires-python; without this black targets newer syntax the
+[tool.ruff]
+# Match requires-python; without this ruff targets newer syntax the
 # 3.11 interpreter can't parse during its safety check.
-target-version = ["py311"]
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "C4"]
+# Content/Python is UE bridge code: Unreal dictates some naming (UPROPERTY
+# names arrive snake_cased) and the classes are thin wrappers around pydevd,
+# so naming/docstring/design lints (pylint's old C0103/C0114/C0115/R0903)
+# aren't part of the selected rule set above.
+
+[[tool.mypy.overrides]]
+# unreal is injected by the editor at runtime; pydevd/pydevd_pycharm are read
+# from the user's PyCharm install. Neither is installable for type checking.
+module = ["unreal.*", "pydevd.*", "pydevd_pycharm.*"]
+ignore_missing_imports = true
