@@ -18,7 +18,7 @@
 
 ### From Fab (recommended)
 
-1. Add the plugin to your library from the [Fab listing page](https://www.fab.com).
+1. Add the plugin to your library from the [Fab listing page](https://www.fab.com/listings/e8eb302d-b7d7-4b7d-93e6-68d0dddc7a9a).
 2. In the Epic Games Launcher, open your project and use **Add to Project** on the listing.
 3. Enable under Edit -> Plugins, restart if prompted.
 

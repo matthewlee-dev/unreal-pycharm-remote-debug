@@ -9,6 +9,7 @@
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/matthewlee-dev?label=sponsor&logo=githubsponsors)](https://github.com/sponsors/matthewlee-dev)
 
 
 <!-- PROJECT LOGO -->
@@ -29,10 +30,13 @@
     <a href="https://github.com/matthewlee-dev/unreal-pycharm-remote-debug/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
     ·
     <a href="https://matthewlee-dev.github.io/unreal-pycharm-remote-debug/">Docs</a>
+    ·
+    <a href="https://www.youtube.com/watch?v=Qam3UiHd_Us">Quickstart Video</a>
   </p>
 </div>
 
-
+> [!TIP]
+> **Just want to use the plugin?** [Get it on FAB](https://www.fab.com/listings/e8eb302d-b7d7-4b7d-93e6-68d0dddc7a9a)
 
 <!-- TABLE OF CONTENTS -->
 <details>
