@@ -6,7 +6,17 @@ on:
 
 jobs:
   run-tests:
-    runs-on: ubuntu-latest
+    # Windows is the majority Unreal platform, and the path handling in
+    # bridge.py branches on Path.is_absolute(), which reads a drive-lettered
+    # PyCharm location as relative anywhere else. Ubuntu alone never runs the
+    # branch a Windows user takes.
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    runs-on: ${{ matrix.os }}
+
     steps:
       - uses: actions/checkout@v7
 

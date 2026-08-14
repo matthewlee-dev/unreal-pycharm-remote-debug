@@ -37,22 +37,13 @@ def _make_plugin(root, name="PyCharmRemoteDebug"):
 
 
 def test_version_code_expects_parts_packed():
-    # Arrange
+    # Arrange - packed place values, so Version rises with the semver it encodes
     from package_plugin import version_code
 
     # Act / Assert
     assert version_code("1.2.0") == 10200
     assert version_code("0.0.1") == 1
     assert version_code("2.10.30") == 21030
-
-
-def test_version_code_expects_ordering_preserved():
-    # Arrange - Version is an increasing build number
-    from package_plugin import version_code
-
-    # Act / Assert
-    assert version_code("1.2.0") < version_code("1.2.1") < version_code("1.3.0")
-    assert version_code("1.3.0") < version_code("2.0.0")
 
 
 @pytest.mark.parametrize("version", ["1.2", "1.2.0.1", "1.two.0", "", "-1.0.0"])

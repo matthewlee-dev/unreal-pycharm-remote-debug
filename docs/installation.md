@@ -1,5 +1,9 @@
 # Installation
 
+## Dependencies
+
+**Python Script Plugin** (`PythonScriptPlugin`).
+
 ## From Fab (recommended)
 
 The plugin is distributed on the [Fab marketplace](https://www.fab.com). Fab
@@ -26,3 +30,7 @@ need Visual Studio (Windows) or Xcode (macOS) installed.
 2. Extract into `YourProject/Plugins/`.
 3. Open the project and answer **Yes** to the rebuild prompt.
 4. Enable under Edit -> Plugins, restart if prompted.
+
+## Next
+
+Set **PyCharm Executable Location** before connecting - see [Usage](usage.md).

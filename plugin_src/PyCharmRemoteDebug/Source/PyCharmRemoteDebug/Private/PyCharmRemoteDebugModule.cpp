@@ -5,6 +5,7 @@
 #include "Framework/Commands/UIAction.h"
 #include "IPythonScriptPlugin.h"
 #include "Modules/ModuleManager.h"
+#include "PyCharmRemoteDebugNotifications.h"
 #include "Textures/SlateIcon.h"
 #include "ToolMenus.h"
 
@@ -80,15 +81,23 @@ void FPyCharmRemoteDebugModule::ExecuteBridgeCommand(const TCHAR* PythonCommand)
 	IPythonScriptPlugin* PythonPlugin = IPythonScriptPlugin::Get();
 	if (!PythonPlugin)
 	{
-		UE_LOG(LogPyCharmRemoteDebug, Error,
-			TEXT("PythonScriptPlugin is unavailable, enable it in Plugins to use PyCharm Remote Debug"));
+		const FString Message = TEXT("PythonScriptPlugin is unavailable, enable it in Edit > Plugins");
+		UE_LOG(LogPyCharmRemoteDebug, Error, TEXT("%s"), *Message);
+		UPyCharmRemoteDebugNotifications::ShowNotification(Message, /*bIsError=*/true);
 		return;
 	}
 
 	FPythonCommandEx Command;
 	Command.Command = PythonCommand;
 	Command.ExecutionMode = EPythonCommandExecutionMode::ExecuteStatement;
-	PythonPlugin->ExecPythonCommandEx(Command);
+
+	// the bridge reports its own failures; this catches it not running at all
+	if (!PythonPlugin->ExecPythonCommandEx(Command))
+	{
+		const FString Message = TEXT("PyCharm Remote Debug command failed, see the Output Log");
+		UE_LOG(LogPyCharmRemoteDebug, Error, TEXT("%s"), *Message);
+		UPyCharmRemoteDebugNotifications::ShowNotification(Message, /*bIsError=*/true);
+	}
 }
 
 #undef LOCTEXT_NAMESPACE
