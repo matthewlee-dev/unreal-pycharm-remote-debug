@@ -624,6 +624,7 @@ def test_connect_valid_egg_expects_settrace_called(
     fake_pydevd_pycharm.settrace.assert_called_once_with(
         host,
         port=port,
+        suspend=False,
         stdoutToServer=True,
         stderrToServer=True,
     )

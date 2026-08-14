@@ -289,6 +289,7 @@ def connect() -> None:
             pydevd_pycharm.settrace(
                 host,
                 port=port,
+                suspend=False,
                 stdoutToServer=True,
                 stderrToServer=True,
             )
@@ -296,6 +297,7 @@ def connect() -> None:
             pydevd_pycharm.settrace(
                 host,
                 port=port,
+                suspend=False,
                 stdout_to_server=True,
                 stderr_to_server=True,
             )
