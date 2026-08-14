@@ -11,8 +11,8 @@ An Unreal Engine plugin for connecting to a PyCharm debugger.
 
 Debug and interact with your Unreal Python tools at runtime, directly from
 PyCharm. Set breakpoints, step through your code, and inspect or modify state
-while Unreal is running. Local and [remote](remote-setup.md) debugging are both
-supported.
+while your Python tool is running in Unreal. Local and [remote](remote-setup.md)
+debugging are both supported.
 
 ## Next steps
 

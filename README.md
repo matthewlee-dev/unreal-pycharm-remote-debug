@@ -21,7 +21,7 @@
 [![Unreal][unreal_5-shield]][unreal-url]
 
 <h3 align="center">Unreal PyCharm Remote Debug</h3>
-  An Unreal Engine plugin for connecting to a PyCharm debugger.
+  A convenience plugin for connecting Unreal to a PyCharm remote debugger (Windows / macOS / Linux).
   <br />
   <p align="center">
     <a href="https://github.com/matthewlee-dev/unreal-pycharm-remote-debug/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
@@ -57,6 +57,8 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 > __This is NOT an official JetBrains or Epic Games plugin.__
+
+Debug and interact with your Unreal Python tools at runtime, directly from PyCharm. Set breakpoints, step through your code, and inspect or modify state while your Python tool is running in Unreal. Local and remote debugging are both supported.
 
 <div align="center">
 
