@@ -9,19 +9,13 @@ An Unreal Engine plugin for connecting to a PyCharm debugger.
 
 ## What it does
 
-The plugin adds a **PyCharm** menu to the level editor that connects Unreal's
-embedded Python interpreter to a PyCharm Professional debug server, so
-breakpoints set in PyCharm hit while Unreal runs.
-
-## Prerequisites
-
-* [Unreal Engine 5](https://www.unrealengine.com) - Windows, macOS or Linux editor.
-* [PyCharm Professional](https://www.jetbrains.com/pycharm/buy/) - the debug egg does not ship with Community Edition.
-* PythonScriptPlugin (ships with Unreal).
+Debug and interact with your Unreal Python tools at runtime, directly from
+PyCharm. Set breakpoints, step through your code, and inspect or modify state
+while Unreal is running. Local and [remote](remote-setup.md) debugging are both
+supported.
 
 ## Next steps
 
-* [Installation](installation.md) - get the plugin into your project.
-* [Usage](usage.md) - configure and connect a debug session.
-* [Remote Setup](remote-setup.md) - debug from a separate PyCharm machine.
-* [Support & Roadmap](support.md) - report a bug, request a feature, license.
+* [Installation](installation.md)
+* [Remote Setup](remote-setup.md)
+* [Support & Roadmap](support.md)

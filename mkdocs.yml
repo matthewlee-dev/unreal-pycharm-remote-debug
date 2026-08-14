@@ -23,7 +23,6 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
   features:
-    - navigation.tabs
     - navigation.top
     - content.action.edit
     - content.code.copy
@@ -31,8 +30,12 @@ theme:
 plugins:
   - search
 
+extra_css:
+  - stylesheets/extra.css
+
 markdown_extensions:
   - admonition
+  - pymdownx.details
   - tables
   - toc:
       permalink: true
@@ -42,6 +45,5 @@ nav:
   - Home: index.md
   - Getting Started:
       - Installation: installation.md
-      - Usage: usage.md
       - Remote Setup: remote-setup.md
   - Support & Roadmap: support.md
