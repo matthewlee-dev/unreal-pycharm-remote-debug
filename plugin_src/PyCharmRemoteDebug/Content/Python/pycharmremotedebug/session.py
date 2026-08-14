@@ -29,13 +29,17 @@ def is_connected() -> bool:
     if pydevd is None:
         return False
 
-    # not pydevd.connected: that is a one-way latch settrace() sets and
-    # stoptrace() never clears. stoptrace() does dispose the global debugger.
     get_global_debugger = getattr(pydevd, "get_global_debugger", None)
     if get_global_debugger is None:
         return False
 
-    return get_global_debugger() is not None
+    # stoptrace() disposes the debugger, which is what rules out a reconnect
+    if get_global_debugger() is None:
+        return False
+
+    # PyDB registers itself globally in its constructor, before the socket is
+    # attempted, so a refused connection leaves one behind that this rules out
+    return bool(getattr(pydevd, "connected", False))
 
 
 def restore_streams() -> int:

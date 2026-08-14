@@ -118,6 +118,7 @@ def test_purge_stale_pydevd_connected_expects_streams_left_wrapped(
     from pycharmremotedebug.session import purge_stale_pydevd
 
     fake_pydevd["pydevd"].get_global_debugger = lambda: object()
+    fake_pydevd["pydevd"].connected = True
     wrapper_stdout = sys.stdout
 
     # Act
@@ -143,9 +144,36 @@ def test_is_connected_live_debugger_expects_true(fake_pydevd):
     from pycharmremotedebug.session import is_connected
 
     fake_pydevd["pydevd"].get_global_debugger = lambda: object()
+    fake_pydevd["pydevd"].connected = True
 
     # Act / Assert
     assert is_connected() is True
+
+
+def test_is_connected_after_failed_connect_expects_false(fake_pydevd):
+    # Arrange - PyDB is registered globally before the socket is attempted, so
+    # a refused connection leaves one behind with the latch still False
+    from pycharmremotedebug.session import is_connected
+
+    fake_pydevd["pydevd"].get_global_debugger = lambda: object()
+    fake_pydevd["pydevd"].connected = False
+
+    # Act / Assert
+    assert is_connected() is False
+
+
+def test_purge_stale_pydevd_after_failed_connect_expects_modules_removed(fake_pydevd):
+    # Arrange - the stale PyDB must not block the retry from purging
+    from pycharmremotedebug.session import purge_stale_pydevd
+
+    fake_pydevd["pydevd"].get_global_debugger = lambda: object()
+    fake_pydevd["pydevd"].connected = False
+
+    # Act
+    purged = purge_stale_pydevd()
+
+    # Assert
+    assert purged == len(fake_pydevd)
 
 
 def test_is_connected_after_stoptrace_expects_false(fake_pydevd):
@@ -189,6 +217,7 @@ def test_purge_stale_pydevd_connected_expects_no_purge(fake_pydevd):
     from pycharmremotedebug.session import purge_stale_pydevd
 
     fake_pydevd["pydevd"].get_global_debugger = lambda: object()
+    fake_pydevd["pydevd"].connected = True
 
     # Act
     purged = purge_stale_pydevd()

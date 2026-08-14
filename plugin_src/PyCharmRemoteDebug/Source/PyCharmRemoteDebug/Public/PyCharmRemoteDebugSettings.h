@@ -47,8 +47,10 @@ public:
 	FString Host = TEXT("localhost");
 
 	// Must match the port of the "Unreal" Python Debug Server configured in PyCharm.
+	// ClampMin is 1, not 0: a cleared field commits 0 and connects nowhere.
+	// Keep PORT_MIN/PORT_MAX in bridge.py in step.
 	UPROPERTY(Config, EditAnywhere, Category = "PyCharmRemoteDebug",
-		meta = (DisplayName = "Debug Port", ClampMin = "0", ClampMax = "65535"))
+		meta = (DisplayName = "Debug Port", ClampMin = "1", ClampMax = "65535"))
 	int32 PortNumber = 5678;
 
 	virtual FName GetContainerName() const override { return "Project"; }

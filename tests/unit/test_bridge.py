@@ -435,6 +435,131 @@ def test_notify_stale_binary_expects_no_raise(mocker):
     mock_unreal.log_warning.assert_called_once()
 
 
+# None raises TypeError past connect()'s handler, whitespace reads as missing
+@pytest.mark.parametrize("pycharm_path", [None, "   ", ""])
+def test_get_debug_egg_blank_path_expects_runtime_error(mocker, pycharm_path):
+    # Arrange
+    from pycharmremotedebug import bridge
+    from pycharmremotedebug.exceptions import PyCharmRemoteDebugRuntimeError
+
+    _mock_settings(mocker, pycharm_path=pycharm_path)
+
+    # Act / Assert
+    with pytest.raises(PyCharmRemoteDebugRuntimeError, match="No PyCharm location"):
+        bridge._get_debug_egg()
+
+
+# 0 is what a cleared port field commits, the rest bracket the usable range
+@pytest.mark.parametrize("port", [0, -1, 65536, 70000])
+def test_get_endpoint_unusable_port_expects_runtime_error(mocker, port):
+    # Arrange
+    from pycharmremotedebug import bridge
+    from pycharmremotedebug.exceptions import PyCharmRemoteDebugRuntimeError
+
+    _mock_settings(mocker, port_number=port)
+
+    # Act / Assert
+    with pytest.raises(PyCharmRemoteDebugRuntimeError, match="not a connectable"):
+        bridge._get_endpoint()
+
+
+# pydevd reads an empty host as "be the server" and blocks in accept()
+@pytest.mark.parametrize("host", ["", "   "])
+def test_get_endpoint_empty_host_expects_runtime_error(mocker, host):
+    # Arrange
+    from pycharmremotedebug import bridge
+    from pycharmremotedebug.exceptions import PyCharmRemoteDebugRuntimeError
+
+    _mock_settings(mocker, host=host)
+
+    # Act / Assert
+    with pytest.raises(PyCharmRemoteDebugRuntimeError, match="No debug host"):
+        bridge._get_endpoint()
+
+
+# not reachable from the int32 field, but a hand-edited ini is
+@pytest.mark.parametrize("port", ["", "   ", None])
+def test_get_endpoint_unreadable_port_expects_runtime_error(mocker, port):
+    # Arrange
+    from pycharmremotedebug import bridge
+    from pycharmremotedebug.exceptions import PyCharmRemoteDebugRuntimeError
+
+    _mock_settings(mocker, port_number=port)
+
+    # Act / Assert
+    with pytest.raises(PyCharmRemoteDebugRuntimeError, match="Could not read"):
+        bridge._get_endpoint()
+
+
+def test_get_endpoint_none_host_expects_runtime_error(mocker):
+    # Arrange
+    from pycharmremotedebug import bridge
+    from pycharmremotedebug.exceptions import PyCharmRemoteDebugRuntimeError
+
+    _mock_settings(mocker, host=None)
+
+    # Act / Assert
+    # str(None) would sail past an emptiness check as a hostname
+    with pytest.raises(PyCharmRemoteDebugRuntimeError, match="No debug host"):
+        bridge._get_endpoint()
+
+
+@pytest.mark.parametrize(("host", "port"), [("localhost", 1), ("10.0.0.4", 65535)])
+def test_get_endpoint_valid_settings_expects_host_and_port(mocker, host, port):
+    # Arrange
+    from pycharmremotedebug import bridge
+
+    _mock_settings(mocker, host=host, port_number=port)
+
+    # Act
+    result = bridge._get_endpoint()
+
+    # Assert
+    assert result == (host, port)
+
+
+def test_get_endpoint_padded_host_expects_stripped(mocker):
+    # Arrange
+    from pycharmremotedebug import bridge
+
+    _mock_settings(mocker, host="  localhost  ")
+
+    # Act
+    host, _ = bridge._get_endpoint()
+
+    # Assert
+    assert host == "localhost"
+
+
+def test_connect_unusable_port_expects_error_logged_and_settrace_not_called(
+    mocker, tmp_path, fake_pydevd_pycharm, restore_sys_path
+):
+    # Arrange
+    from pycharmremotedebug import bridge
+
+    egg_path = tmp_path / "pydevd-pycharm.egg"
+    egg_path.touch()
+
+    mocker.patch("pycharmremotedebug.bridge.is_connected", return_value=False)
+    mock_purge = mocker.patch("pycharmremotedebug.bridge.purge_stale_pydevd")
+    mock_unpack = mocker.patch("pycharmremotedebug.bridge._unpack_egg")
+    mocker.patch(
+        "pycharmremotedebug.bridge._get_debug_egg", return_value=egg_path.as_posix()
+    )
+    _mock_settings(mocker, port_number=0)
+    mock_unreal = mocker.patch("pycharmremotedebug.bridge.unreal")
+
+    # Act
+    bridge.connect()
+
+    # Assert
+    fake_pydevd_pycharm.settrace.assert_not_called()
+    assert "not a connectable" in mock_unreal.log_error.call_args[0][0]
+    # untouched sys.path and sys.modules, so a corrected port can be retried
+    mock_unpack.assert_not_called()
+    mock_purge.assert_not_called()
+
+
 def test_connect_already_connected_expects_no_op(mocker):
     # Arrange
     from pycharmremotedebug import bridge

@@ -23,6 +23,12 @@ MAX_SEARCH_DEPTH = 2
 # Unreal snake-cases UPROPERTY names by camel-case break: PyCharmPath -> Py|Charm|Path
 PYCHARM_PATH_PROPERTY = "py_charm_path"
 
+# 0 is what a cleared port field commits, and it connects nowhere
+PORT_MIN = 1
+PORT_MAX = 65535
+
+DEFAULT_HOST = "localhost"
+
 
 def _get_settings() -> "unreal.PyCharmRemoteDebugSettings":
     """Get the PyCharmRemoteDebugSettings default object"""
@@ -163,7 +169,9 @@ def _get_debug_egg() -> str:
             "current settings class"
         ) from exc
 
-    if serialized_path == "":
+    # None would reach Path() and raise TypeError past connect()'s handler
+    serialized_path = "" if serialized_path is None else str(serialized_path).strip()
+    if not serialized_path:
         raise PyCharmRemoteDebugRuntimeError(
             "No PyCharm location saved in Project Settings, please enter the "
             "path to your PyCharm executable"
@@ -185,6 +193,48 @@ def _get_debug_egg() -> str:
         )
 
     return egg_path.as_posix()
+
+
+def _get_endpoint() -> tuple[str, int]:
+    """Resolve the debug server host and port from Project Settings
+
+    Guarded because settrace() waits on the game thread with no timeout: an
+    empty host flips pydevd into server mode, blocking in accept() forever.
+
+    Returns:
+        tuple[str, int]: Host and port to hand settrace()
+
+    Raises:
+        PyCharmRemoteDebugRuntimeError: host unset, or port unset/out of range
+    """
+    settings = _get_settings()
+
+    # str() alone would turn None into the literal hostname "None"
+    raw_host = settings.get_editor_property("host")
+    host = "" if raw_host is None else str(raw_host).strip()
+    if not host:
+        raise PyCharmRemoteDebugRuntimeError(
+            "No debug host saved in Project Settings, please enter the host the "
+            f'PyCharm debug server listens on ("{DEFAULT_HOST}" when PyCharm runs '
+            "on this machine)"
+        )
+
+    try:
+        port = int(settings.get_editor_property("port_number"))
+    except (TypeError, ValueError) as exc:
+        raise PyCharmRemoteDebugRuntimeError(
+            "Could not read the debug port from Project Settings "
+            f"({exc}), please enter the port of your PyCharm Python Debug Server"
+        ) from exc
+
+    if not PORT_MIN <= port <= PORT_MAX:
+        raise PyCharmRemoteDebugRuntimeError(
+            f"Debug port {port} saved in Project Settings is not a connectable "
+            "port, please enter the port of your PyCharm Python Debug Server "
+            f"({PORT_MIN}-{PORT_MAX})"
+        )
+
+    return host, port
 
 
 def _route_pydevd_info_logging() -> None:
@@ -214,6 +264,7 @@ def connect() -> None:
 
     try:
         dbg_egg = _get_debug_egg()
+        host, port = _get_endpoint()
     except PyCharmRemoteDebugRuntimeError as exc:
         _notify(str(exc), is_error=True)
         return
@@ -233,9 +284,6 @@ def connect() -> None:
 
     _route_pydevd_info_logging()
 
-    settings = _get_settings()
-    host = settings.get_editor_property("host")
-    port = settings.get_editor_property("port_number")
     try:
         try:
             pydevd_pycharm.settrace(
