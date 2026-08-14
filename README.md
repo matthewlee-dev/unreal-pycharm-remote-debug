@@ -10,7 +10,6 @@
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
 
-
 <!-- PROJECT LOGO -->
 <br />
   <a href="https://github.com/matthewlee-dev/unreal-pycharm-remote-debug">
@@ -21,7 +20,7 @@
 [![Unreal][unreal_5-shield]][unreal-url]
 
 <h3 align="center">Unreal PyCharm Remote Debug</h3>
-  A convenience plugin for connecting Unreal to a PyCharm remote debugger (Windows / macOS / Linux).
+  A convenience plugin for connecting Unreal to a PyCharm remote debugger.
   <br />
   <p align="center">
     <a href="https://github.com/matthewlee-dev/unreal-pycharm-remote-debug/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
@@ -33,9 +32,6 @@
     <a href="https://www.youtube.com/watch?v=Qam3UiHd_Us">Quickstart Video</a>
   </p>
 </div>
-
-> [!TIP]
-> **Just want to use the plugin?** [Get it on FAB](https://www.fab.com/listings/e8eb302d-b7d7-4b7d-93e6-68d0dddc7a9a)
 
 <!-- TABLE OF CONTENTS -->
 <details>
@@ -56,7 +52,8 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-> __This is NOT an official JetBrains or Epic Games plugin.__
+> [!TIP]
+> **Just want to use the plugin?** [Get it on FAB](https://www.fab.com/listings/e8eb302d-b7d7-4b7d-93e6-68d0dddc7a9a)
 
 Debug and interact with your Unreal Python tools at runtime, directly from PyCharm. Set breakpoints, step through your code, and inspect or modify state while your Python tool is running in Unreal. Local and remote debugging are both supported.
 
@@ -65,6 +62,8 @@ Debug and interact with your Unreal Python tools at runtime, directly from PyCha
 <img src="docs/resources/images/screenshot.png" alt="Unreal" width="900">
 
 </div>
+
+> __This is NOT an official JetBrains or Epic Games plugin.__
     
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
