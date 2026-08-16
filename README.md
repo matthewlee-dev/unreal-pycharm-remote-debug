@@ -110,7 +110,6 @@ Please reach out via the [request a feature](https://github.com/matthewlee-dev/u
 
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
-* [Project template: MayaPythonProjectTemplate](https://github.com/matthewlee-dev/MayaPythonProjectTemplate).
 * [deform.dev](https://deform.dev)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
